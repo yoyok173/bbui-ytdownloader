@@ -21,6 +21,13 @@ class Download extends React.Component {
         var jsonData = JSON.stringify({
             ytLink: this.refs.downloadurl.value
         });
+
+        context.setState({
+            sent: true,
+            success: false,
+            statusMessage: 'Download in progress...'
+        });
+
         fetch('/api/download/audio/', {
             method: "POST",
             headers: {
@@ -33,10 +40,11 @@ class Download extends React.Component {
         .then(function(res){
             console.log(res);
             if(res.status === 200){
+                window.location.assign('http://localhost:5000/api/getfile/mp3')
                 context.setState({
                     sent: true,
                     success: true,
-                    statusMessage: 'Download request sent!'
+                    statusMessage: 'Download finished!'
                 })
             }
             else if(res.status === 500){
@@ -51,27 +59,6 @@ class Download extends React.Component {
             console.log(error);
             console.log(error.message);
         });
-        // var url = 'https://www.youtube.com/watch?v=' + this.refs.downloadurl.value
-        // if(ytdlcore.validateURL(url)){
-          // var audio = youtubedl(url,
-            // // Optional arguments passed to youtube-dl.
-            // ['--format=bestaudio/best'],
-            // // Additional options can be given for calling `child_process.execFile()`.
-            // { cwd: __dirname });
-
-          // // Will be called when the download starts.
-          // audio.on('info', function(info) {
-            // console.log('Download started');
-            // console.log('filename: ' + info._filename);
-            // console.log('size: ' + info.size);
-          // });
-
-          // audio.pipe(fs.createWriteStream('test.mp3'));
-          // audio.on('end', function() {
-            // console.log('finished downloading!');
-          // });
-        // }
-        // console.log(jsonData);
     }
 
     render() {
@@ -79,10 +66,11 @@ class Download extends React.Component {
             <div className="information-form reset-form center-block">
                 {this.state.sent ?
                     this.state.success ? <div className = "alert alert-success" role="alert"> {this.state.statusMessage}</div> :
+                        this.state.statusMessage === "Download in progress..." ? <div className="alert alert-warning" role="alert"> {this.state.statusMessage}</div> :
                         <div className = "alert alert-danger" role="alert"> {this.state.statusMessage}</div>
                     : <div/>
                 }
-                <h3>Download mp3 or mp4</h3>
+                <h3>Download YouTube Video</h3>
                 <form onSubmit={this.onSubmit} id="forgot-email-form">
                     <div className='form-group'>
                         <input type="text" className="form-control" name="forgotemail" autoFocus="autofocus" required placeholder="YouTube URL" id="forgotemail" ref="downloadurl"/>

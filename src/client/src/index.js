@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, browserHistory } from 'react-router';
+import { Router, Route, browserHistory, Redirect } from 'react-router';
 import registerServiceWorker from './registerServiceWorker';
 import './stylesheets/style.css';
 
@@ -13,7 +13,7 @@ import Error from './pages/error';
 ReactDOM.render((
     <Router history={browserHistory}>
         <Route path="/" component={Index}/>
-        <Route path="*" component={Error}/>
+        <Redirect from="*" to="/" />
     </Router>
 ), document.getElementById('root'));
 registerServiceWorker();
