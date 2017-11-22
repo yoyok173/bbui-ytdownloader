@@ -1,0 +1,93 @@
+html {
+    height: 100%;
+    display: block;
+}
+body{
+    background-color: ghostwhite;
+    height: 100%;
+    
+}
+
+.information-form{
+    max-width: 300px;
+    padding: 19px 29px 29px;
+    margin: 0 auto 20px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    box-shadow: 0 1px 2px;
+    margin-top: 30px
+}
+
+.reset-form{
+    max-width: 540px;
+}
+
+.flex-center{
+    display: flex;
+    justify-content: center;
+}
+.information-form *{
+    margin-top: 6px;
+}
+
+.nav-bar{
+    background-color: navy;
+    height: 52px;
+    color: lightgray;
+}
+
+.nav-bar a, .nav-account{
+    text-decoration: none;
+    background-color: transparent;
+    color: lightgray;
+    font-size: large;
+    transition: all 1s ease-out; /* just trying to fill a requirement */
+}
+.nav-bar a:hover{
+    color: white;
+}
+
+#nav-bar-brand{
+    font-size: xx-large;
+    float: left!important
+}
+
+.navbar-fixed-bottom {
+    text-align: center;
+}
+
+.jumbotron {
+  background: transparent;
+}
+
+.nav-bar {
+    margin-bottom: 20px;
+}
+
+.nav-bar li{
+    display: inline;
+    padding: 14px 16px;
+    vertical-align: center;
+}
+
+button.link {
+    background: none;
+    border: none;
+}
+
+h2{
+    font-size: 35px;
+}
+
+p {
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+.p-task {
+    margin: 0;
+    padding: 0;
+}
