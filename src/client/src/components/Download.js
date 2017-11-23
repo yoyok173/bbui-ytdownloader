@@ -1,8 +1,5 @@
 import React from 'react';
-import { Link, browserHistory } from 'react-router';
-// const youtubedl = require('youtube-dl');
-const ytdlcore = require('ytdl-core');
-const fs = require('fs');
+import ytdl from 'ytdl-core';
 var query = '';
 class Download extends React.Component {
     constructor(props){
@@ -68,7 +65,7 @@ class Download extends React.Component {
         e.preventDefault();
         var context = this;
         query = this.refs.downloadquery.value;
-        if(!ytdlcore.validateURL(query)){
+        if(!ytdl.validateURL(query)){
             fetch('/api/searchquery/' + query, {
                 method: "GET"
             })

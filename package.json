@@ -2,7 +2,7 @@
   "name": "bbui-ytdownloader",
   "version": "1.0.0",
   "description": "Dynamic webpage to download best quality audio or video from YouTube videos",
-  "engines":{
+  "engines": {
     "node": "6.11.1"
   },
   "main": "server.js",
@@ -21,6 +21,12 @@
     "path": "^0.12.7",
     "youtube-dl": "^1.11.1",
     "ytdl-core": "^0.18.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "request": "^2.81.0",
+    "tape": "^4.7.0"
   },
   "keywords": [
     "node",
