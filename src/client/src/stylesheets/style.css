@@ -19,7 +19,7 @@ body{
     margin-top: 30px
 }
 
-.reset-form{
+.download-form{
     max-width: 540px;
 }
 
@@ -37,7 +37,7 @@ body{
     color: lightgray;
 }
 
-.nav-bar a, .nav-account{
+.nav-bar a{
     text-decoration: none;
     background-color: transparent;
     color: lightgray;
@@ -86,8 +86,4 @@ p {
     -webkit-margin-after: 1em;
     -webkit-margin-start: 0px;
     -webkit-margin-end: 0px;
-}
-.p-task {
-    margin: 0;
-    padding: 0;
 }

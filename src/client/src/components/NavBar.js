@@ -2,7 +2,6 @@ import React from 'react';
 import {Link} from 'react-router';
 
 class NavBar extends React.Component {
-    // the logout button should just directly fetch to the logout endpoint
     render() {
         return (
             <nav className="nav-bar navbar-default navbar-static-top navbar-collapse">

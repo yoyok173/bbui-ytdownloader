@@ -1,18 +1,4 @@
 // Brandon Bui
-// Aaron Massey
-// HW 2
-
-// Requirements
-// [X] 5 User Scenarios
-// [X] Use fetch to retrieve data set from a remote web service
-//    [X] Data should be cached
-// [X] Declare at least two classes
-// [X] 5 endpoints using route parameters
-// [X] 5 resources offering GET endpoints
-// [X] 1 resource offering PUT endpoint
-// [X] 1 resource offering POST endpoint
-// [X] 1 resource offering DELETE endpoint
-// [\] Invalid requests return appropriate error message
 
 // imports
 const fs = require('fs');
@@ -32,6 +18,7 @@ server.use(express.static(__dirname + '/client/build'));
 
 
 var main = function () {
+  var filename = '';
   server.get('/api/info/:ytLink', (req, res) => {
       res.header('Access-Control-Allow-Credentials','true');
       var url = 'https://www.youtube.com/watch?v=' + req.params['ytLink'];
@@ -77,14 +64,12 @@ var main = function () {
           console.log('Download started');
           console.log('filename: ' + info._filename);
           console.log('size: ' + info.size);
-        });
+          filename = info.title + '.mp3';
+          audio.pipe(fs.createWriteStream(filename));
+        })
 
-        var audioFile = 'test.mp3';
-
-        audio.pipe(fs.createWriteStream(audioFile));
-
-        audio.on('end', () => {
-          res.status(200).send("The audio file has finished downloading!");
+        audio.on('end', function() {
+          res.status(200).json({"filename": filename});
           console.log('finished downloading');
         })
       }
@@ -124,10 +109,10 @@ var main = function () {
       }
   });
 
-  server.get('/api/getfile/:filetype', (req, res) => {
-      var file = 'test.' + req.params['filetype'];
+  server.get('/api/file/:filename', (req, res) => {
+      var file = req.params['filename'];
       var filename = path.basename(file);
-      var mimetype = mime.getType(file);
+      var mimetype = mime.lookup(file);
       res.setHeader('Content-disposition', 'attachment; filename=' + filename);
       res.setHeader('Content-type', mimetype);
 
@@ -138,6 +123,18 @@ var main = function () {
       filestream.pipe(res);
 
   });
+
+  var parseHTML = function(url){
+    fetch(url)
+      .then(function (res) {
+        return res.text();
+      });
+  }
+  server.get('/api/searchquery/:query', (req, res) =>{
+    var url = 'https://youtube.com/results?search_query=' + req.params['query'];
+    var html = parseHTML(url);
+    console.log(html)
+  })
 
 
 

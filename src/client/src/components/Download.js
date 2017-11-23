@@ -37,23 +37,34 @@ class Download extends React.Component {
             body: jsonData
 
         })
-        .then(function(res){
-            console.log(res);
-            if(res.status === 200){
-                window.location.assign('http://localhost:5000/api/getfile/mp3')
-                context.setState({
-                    sent: true,
-                    success: true,
-                    statusMessage: 'Download finished!'
-                })
-            }
-            else if(res.status === 500){
-                context.setState({
-                    sent: true,
-                    success: false,
-                    statusMessage: 'There was an error downloading this video.'
-                })
-            }
+        .then(function(res) {
+          if(res.status === 200){
+              context.setState({
+                  sent: true,
+                  success: false,
+                  statusMessage: 'Download finished. Installing now!'
+              })
+
+          }
+          else if(res.status === 500){
+              context.setState({
+                  sent: true,
+                  success: false,
+                  statusMessage: 'There was an error downloading this video.'
+              })
+          }
+          return res.json();
+        })
+          .then(function(body){
+            console.log(body);
+            var url = 'http://localhost:5000/api/file/' + body['filename'];
+            window.location.assign(url);
+            context.setState({
+                sent: true,
+                success: true,
+                statusMessage: 'Download finished!'
+            });
+
         })
         .catch(function(error){
             console.log(error);
@@ -63,10 +74,10 @@ class Download extends React.Component {
 
     render() {
         return (
-            <div className="information-form reset-form center-block">
+            <div className="information-form download-form center-block">
                 {this.state.sent ?
                     this.state.success ? <div className = "alert alert-success" role="alert"> {this.state.statusMessage}</div> :
-                        this.state.statusMessage === "Download in progress..." ? <div className="alert alert-warning" role="alert"> {this.state.statusMessage}</div> :
+                        this.state.statusMessage === "Download in progress..." || this.state.statusMessage === "Download finished. Installing now!" ? <div className="alert alert-warning" role="alert"> {this.state.statusMessage}</div> :
                         <div className = "alert alert-danger" role="alert"> {this.state.statusMessage}</div>
                     : <div/>
                 }

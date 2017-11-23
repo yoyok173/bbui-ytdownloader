@@ -1,5 +1,4 @@
 import React from 'react';
-import Welcome from './Welcome';
 import Download from './Download';
 
 class HomeContent extends React.Component {

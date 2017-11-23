@@ -5,7 +5,6 @@ import registerServiceWorker from './registerServiceWorker';
 import './stylesheets/style.css';
 
 import Index from './pages/index';
-import Error from './pages/error';
 
 // Second to last route is due to a terible bugfix I need to investigate more when I have time and
 // have brandon with me because he knows more about this sorta thing
