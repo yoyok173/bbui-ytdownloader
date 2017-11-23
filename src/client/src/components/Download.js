@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, browserHistory } from 'react-router';
 // const youtubedl = require('youtube-dl');
-// const ytdlcore = require('ytdl-core');
+const ytdlcore = require('ytdl-core');
 const fs = require('fs');
-
+var query = '';
 class Download extends React.Component {
     constructor(props){
         super(props);
@@ -18,9 +18,29 @@ class Download extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
         var context = this;
+        query = this.refs.downloadquery.value;
         var jsonData = JSON.stringify({
-            ytLink: this.refs.downloadurl.value
+            ytLink: query
         });
+        if(!ytdlcore.validateURL(query)){
+            fetch('/api/searchquery/' + query, {
+                method: "GET"
+            })
+            .then(function(res) {
+                var query = res.text();
+                console.log(query);
+                return query;
+            })
+            .then(function(url){
+                console.log(url);
+                console.log(jsonData);
+                jsonData = JSON.stringify({
+                    ytLink: url
+                });
+                console.log(jsonData);
+            })
+        }
+        console.log(jsonData);
 
         context.setState({
             sent: true,
@@ -84,7 +104,8 @@ class Download extends React.Component {
                 <h3>Download YouTube Video</h3>
                 <form onSubmit={this.onSubmit} id="forgot-email-form">
                     <div className='form-group'>
-                        <input type="text" className="form-control" name="forgotemail" autoFocus="autofocus" required placeholder="YouTube URL" id="forgotemail" ref="downloadurl"/>
+                        <input type="text" className="form-control" name="downloader" autoFocus="autofocus" required placeholder="YouTube URL or Query" id="downloader"
+                               ref="downloadquery"/>
                     </div>
                     <button className="btn btn-primary" type="submit">Download</button>
                 </form>

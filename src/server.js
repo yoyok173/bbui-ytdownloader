@@ -8,6 +8,8 @@ const ytdlcore = require('ytdl-core');
 const bodyParser = require('body-parser');
 const path = require('path');
 const mime = require('mime');
+const fetch = require('node-fetch');
+var jssoup = require('jssoup').default;
 
 // Setup the server
 const server = express();
@@ -27,7 +29,7 @@ var main = function () {
           if(err){
             res.status(500).send('There was an unknown error with the server.');
           }
-          
+
           var ret = {
             "title": info.title,
             "thumbnail": info.thumbnail
@@ -40,11 +42,10 @@ var main = function () {
         res.status(500).send("The YouTube video doesn't exist");
       }
   });
-  
+
   server.post('/api/download/audio/', (req, res) => {
       res.header('Access-Control-Allow-Credentials','true');
-      var videoId = req.body['ytLink'];
-      var url = 'https://www.youtube.com/watch?v=' + videoId;
+      var url = req.body['ytLink'];
       console.log(url);
       if(ytdlcore.validateURL(url)){
           youtubedl.getInfo(url, [], function(err, info) {
@@ -53,9 +54,10 @@ var main = function () {
                   res.status(500).send('There was an unknown error with the server.');
               }
           });
-        var audio = youtubedl('https://www.youtube.com/watch?v=' + videoId,
+        var audio = youtubedl(url,
           // Optional arguments passed to youtube-dl.
-          ['--format=bestaudio/best'],
+          ['-f', 'best'],
+          // ['-f', 'bestaudio/140'],
           // Additional options can be given for calling `child_process.execFile()`.
           { cwd: __dirname, maxBuffer: Infinity });
 
@@ -65,6 +67,7 @@ var main = function () {
           console.log('filename: ' + info._filename);
           console.log('size: ' + info.size);
           filename = info.title + '.mp3';
+          filename = filename.replace(/[^\x00-\x7F]/g, "");
           audio.pipe(fs.createWriteStream(filename));
         })
 
@@ -77,7 +80,7 @@ var main = function () {
         res.status(500).send("The YouTube video doesn't exist");
       }
   });
-  
+
   server.post('/api/download/video/', (req, res) => {
       res.header('Access-Control-Allow-Credentials','true');
       var videoId = req.body['ytLink'];
@@ -112,8 +115,8 @@ var main = function () {
   server.get('/api/file/:filename', (req, res) => {
       var file = req.params['filename'];
       var filename = path.basename(file);
-      var mimetype = mime.lookup(file);
-      res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+      var mimetype = mime.getType(file);
+      res.setHeader('Content-disposition', 'attachment; filename*=UTF-8\'\'' + filename);
       res.setHeader('Content-type', mimetype);
 
       var filestream = fs.createReadStream(file);
@@ -124,16 +127,26 @@ var main = function () {
 
   });
 
-  var parseHTML = function(url){
-    fetch(url)
-      .then(function (res) {
-        return res.text();
-      });
-  }
   server.get('/api/searchquery/:query', (req, res) =>{
     var url = 'https://youtube.com/results?search_query=' + req.params['query'];
-    var html = parseHTML(url);
-    console.log(html)
+    fetch(url)
+        .then(function (resp) {
+            return resp.text();
+        })
+        .then(function(html) {
+            var soup = new jssoup(html);
+            for (var vid of soup.findAll('a')){
+                var urlClass = JSON.stringify(vid['attrs']['class']);
+                var vidHref = JSON.stringify(vid['attrs']['href']);
+                if(urlClass && urlClass.includes('yt-uix-tile-link') && vidHref.startsWith('\"/watch')){
+                    var vidHrefWithoutQuotes = vidHref.substring(1, vidHref.length-1);
+                    return "https://www.youtube.com" + vidHrefWithoutQuotes;
+                }
+            }
+        })
+        .then(function(url){
+            res.send(url);
+        });
   })
 
 

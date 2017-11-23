@@ -15,6 +15,7 @@
     "fs": "0.0.1-security",
     "jssoup": "0.0.6",
     "mime": "^2.0.3",
+    "node-fetch": "^1.7.3",
     "path": "^0.12.7",
     "youtube-dl": "^1.11.1",
     "ytdl-core": "^0.18.2"
