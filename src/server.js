@@ -149,6 +149,10 @@ var main = function () {
         });
   })
 
+  server.post('/api/validate/', (req, res) => {
+    res.status(200).json({"validated": ytdlcore.validateURL(req.body['url'])});
+  })
+
 
 
   server.listen(port);

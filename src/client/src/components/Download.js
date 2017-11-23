@@ -1,5 +1,4 @@
 import React from 'react';
-import ytdl from 'ytdl-core';
 var query = '';
 class Download extends React.Component {
     constructor(props){
@@ -62,35 +61,50 @@ class Download extends React.Component {
             });
     }
     handleSubmit(e) {
-        e.preventDefault();
-        var context = this;
-        query = this.refs.downloadquery.value;
-        if(!ytdl.validateURL(query)){
-            fetch('/api/searchquery/' + query, {
-                method: "GET"
+      e.preventDefault();
+      var context = this;
+      query = this.refs.downloadquery.value;
+
+      fetch('/api/validate/', {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({"url": query })
+      })
+      .then(function(validateRes){
+          return validateRes.json();
+      })
+      .then(function(validateBool) {
+        var bool = validateBool['validated'];
+        if (!bool) {
+          fetch('/api/searchquery/' + query, {
+            method: "GET"
+          })
+            .then(function (res) {
+              var query = res.text();
+              return query;
             })
-            .then(function(res) {
-                var query = res.text();
-                return query;
+            .then(function (url) {
+              console.log(url);
+              jsonData = JSON.stringify({
+                ytLink: url
+              });
+              context.download(context, jsonData);
             })
-            .then(function(url){
-                console.log(url);
-                jsonData = JSON.stringify({
-                    ytLink: url
-                });
-                context.download(context, jsonData);
-            })
-            .catch(function(error){
-                console.log(error);
-                console.log(error.message);
+            .catch(function (error) {
+              console.log(error);
+              console.log(error.message);
             });
         }
         else {
-            var jsonData = JSON.stringify({
-                ytLink: query
-            });
-            context.download(context, jsonData);
+          var jsonData = JSON.stringify({
+            ytLink: query
+          });
+          context.download(context, jsonData);
         }
+      });
     }
 
     render() {
