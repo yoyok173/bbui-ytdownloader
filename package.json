@@ -21,7 +21,7 @@
     "path": "^0.12.7",
     "youtube-dl": "^1.11.1",
     "ytdl-core": "^0.18.2"
-  }
+  },
   "keywords": [
     "node",
     "heroku",
