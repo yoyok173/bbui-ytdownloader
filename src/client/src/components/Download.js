@@ -46,7 +46,7 @@ class Download extends React.Component {
             })
             .then(function(body){
                 console.log(body);
-                var url = 'http://localhost:5000/api/file/' + body['filename'];
+                var url = 'http://bbui-ytdownloader.herokuapp.com/api/file/' + body['filename'];
                 window.location.assign(url);
                 context.setState({
                     sent: true,

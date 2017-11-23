@@ -153,7 +153,9 @@ var main = function () {
     res.status(200).json({"validated": ytdlcore.validateURL(req.body['url'])});
   })
 
-
+  server.get('*', function (req, res){
+    res.sendFile(__dirname+'/client/build/index.html');
+  });
 
   server.listen(port);
   console.log(`Server listening on port: ${port}`);
