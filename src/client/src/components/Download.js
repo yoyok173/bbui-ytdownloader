@@ -14,34 +14,7 @@ class Download extends React.Component {
         };
         this.onSubmit = this.handleSubmit.bind(this);
     }
-
-    handleSubmit(e) {
-        e.preventDefault();
-        var context = this;
-        query = this.refs.downloadquery.value;
-        var jsonData = JSON.stringify({
-            ytLink: query
-        });
-        if(!ytdlcore.validateURL(query)){
-            fetch('/api/searchquery/' + query, {
-                method: "GET"
-            })
-            .then(function(res) {
-                var query = res.text();
-                console.log(query);
-                return query;
-            })
-            .then(function(url){
-                console.log(url);
-                console.log(jsonData);
-                jsonData = JSON.stringify({
-                    ytLink: url
-                });
-                console.log(jsonData);
-            })
-        }
-        console.log(jsonData);
-
+    download(context, jsonData){
         context.setState({
             sent: true,
             success: false,
@@ -57,39 +30,70 @@ class Download extends React.Component {
             body: jsonData
 
         })
-        .then(function(res) {
-          if(res.status === 200){
-              context.setState({
-                  sent: true,
-                  success: false,
-                  statusMessage: 'Download finished. Installing now!'
-              })
+            .then(function(res) {
+                if(res.status === 200){
+                    context.setState({
+                        sent: true,
+                        success: false,
+                        statusMessage: 'Download finished. Installing now!'
+                    })
 
-          }
-          else if(res.status === 500){
-              context.setState({
-                  sent: true,
-                  success: false,
-                  statusMessage: 'There was an error downloading this video.'
-              })
-          }
-          return res.json();
-        })
-          .then(function(body){
-            console.log(body);
-            var url = 'http://localhost:5000/api/file/' + body['filename'];
-            window.location.assign(url);
-            context.setState({
-                sent: true,
-                success: true,
-                statusMessage: 'Download finished!'
+                }
+                else if(res.status === 500){
+                    context.setState({
+                        sent: true,
+                        success: false,
+                        statusMessage: 'There was an error downloading this video.'
+                    })
+                }
+                return res.json();
+            })
+            .then(function(body){
+                console.log(body);
+                var url = 'http://localhost:5000/api/file/' + body['filename'];
+                window.location.assign(url);
+                context.setState({
+                    sent: true,
+                    success: true,
+                    statusMessage: 'Download finished!'
+                });
+
+            })
+            .catch(function(error){
+                console.log(error);
+                console.log(error.message);
             });
-
-        })
-        .catch(function(error){
-            console.log(error);
-            console.log(error.message);
-        });
+    }
+    handleSubmit(e) {
+        e.preventDefault();
+        var context = this;
+        query = this.refs.downloadquery.value;
+        if(!ytdlcore.validateURL(query)){
+            fetch('/api/searchquery/' + query, {
+                method: "GET"
+            })
+            .then(function(res) {
+                var query = res.text();
+                return query;
+            })
+            .then(function(url){
+                console.log(url);
+                jsonData = JSON.stringify({
+                    ytLink: url
+                });
+                context.download(context, jsonData);
+            })
+            .catch(function(error){
+                console.log(error);
+                console.log(error.message);
+            });
+        }
+        else {
+            var jsonData = JSON.stringify({
+                ytLink: query
+            });
+            context.download(context, jsonData);
+        }
     }
 
     render() {
