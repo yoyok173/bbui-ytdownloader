@@ -6,13 +6,10 @@ import './stylesheets/style.css';
 
 import Index from './pages/index';
 
-// Second to last route is due to a terible bugfix I need to investigate more when I have time and
-// have brandon with me because he knows more about this sorta thing
-
 ReactDOM.render((
     <Router history={browserHistory}>
         <Route path="/" component={Index}/>
-        <Redirect from="*" to="/" />
+        {/*<Redirect from="*" to="/" />*/}
     </Router>
 ), document.getElementById('root'));
 registerServiceWorker();

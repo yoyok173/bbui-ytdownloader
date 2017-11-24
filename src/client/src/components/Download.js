@@ -1,5 +1,6 @@
 import React from 'react';
 var query = '';
+var location = '';
 class Download extends React.Component {
     constructor(props){
         super(props);
@@ -16,7 +17,6 @@ class Download extends React.Component {
             success: false,
             statusMessage: 'Download in progress...'
         });
-
         fetch('/api/download/audio/', {
             method: "POST",
             headers: {
@@ -26,39 +26,36 @@ class Download extends React.Component {
             body: jsonData
 
         })
-            .then(function(res) {
-                if(res.status === 200){
-                    context.setState({
-                        sent: true,
-                        success: false,
-                        statusMessage: 'Download finished. Installing now!'
-                    })
-
-                }
-                else if(res.status === 500){
-                    context.setState({
-                        sent: true,
-                        success: false,
-                        statusMessage: 'There was an error downloading this video.'
-                    })
-                }
-                return res.json();
-            })
-            .then(function(body){
-                console.log(body);
-                var url = 'http://bbui-ytdownloader.herokuapp.com/api/file/' + body['filename'];
-                window.location.assign(url);
+        .then(function(res) {
+            if(res.status === 200){
                 context.setState({
                     sent: true,
-                    success: true,
-                    statusMessage: 'Download finished!'
-                });
+                    success: false,
+                    statusMessage: 'Download finished. Installing now!'
+                })
 
-            })
-            .catch(function(error){
-                console.log(error);
-                console.log(error.message);
+            }
+            else if(res.status === 500){
+                context.setState({
+                    sent: true,
+                    success: false,
+                    statusMessage: 'There was an error downloading this video.'
+                })
+            }
+            return res.json();
+        })
+        .then(function(body){
+            window.location.assign(location + '/api/file/' + body['filename']);
+            context.setState({
+                sent: true,
+                success: true,
+                statusMessage: 'Download finished!'
             });
+        })
+        .catch(function(error){
+            console.log(error);
+            console.log(error.message);
+        });
     }
     handleSubmit(e) {
       e.preventDefault();
@@ -76,8 +73,9 @@ class Download extends React.Component {
       .then(function(validateRes){
           return validateRes.json();
       })
-      .then(function(validateBool) {
-        var bool = validateBool['validated'];
+      .then(function(validateJson) {
+        var bool = validateJson['validated'];
+        location = validateJson['location'];
         if (!bool) {
           fetch('/api/searchquery/' + query, {
             method: "GET"

@@ -21,27 +21,6 @@ server.use(express.static(__dirname + '/client/build'));
 
 var main = function () {
   var filename = '';
-  server.get('/api/info/:ytLink', (req, res) => {
-      res.header('Access-Control-Allow-Credentials','true');
-      var url = 'https://www.youtube.com/watch?v=' + req.params['ytLink'];
-      if(ytdlcore.validateURL(url)){
-        youtubedl.getInfo(url, [], function(err, info){
-          if(err){
-            res.status(500).send('There was an unknown error with the server.');
-          }
-
-          var ret = {
-            "title": info.title,
-            "thumbnail": info.thumbnail
-          }
-          console.log(ret);
-          res.json(ret);
-        })
-      }
-      else{
-        res.status(500).send("The YouTube video doesn't exist");
-      }
-  });
 
   server.post('/api/download/audio/', (req, res) => {
       res.header('Access-Control-Allow-Credentials','true');
@@ -56,7 +35,7 @@ var main = function () {
           });
         var audio = youtubedl(url,
           // Optional arguments passed to youtube-dl.
-          ['-f', 'best'],
+          ['-f', 'bestaudio/best'],
           // ['-f', 'bestaudio/140'],
           // Additional options can be given for calling `child_process.execFile()`.
           { cwd: __dirname, maxBuffer: Infinity });
@@ -66,13 +45,13 @@ var main = function () {
           console.log('Download started');
           console.log('filename: ' + info._filename);
           console.log('size: ' + info.size);
-          filename = info.title + '.mp3';
+          filename = info.title + '.MP3';
           filename = filename.replace(/[^\x00-\x7F]/g, "");
           audio.pipe(fs.createWriteStream(filename));
         })
 
         audio.on('end', function() {
-          res.status(200).json({"filename": filename});
+            res.status(200).json({"filename": filename});
           console.log('finished downloading');
         })
       }
@@ -116,9 +95,8 @@ var main = function () {
       var file = req.params['filename'];
       var filename = path.basename(file);
       var mimetype = mime.getType(file);
-      res.setHeader('Content-disposition', 'attachment; filename*=UTF-8\'\'' + filename);
+      res.setHeader('Content-disposition', 'attachment; filename*=UTF-8\"' + filename + '\"');
       res.setHeader('Content-type', mimetype);
-
       var filestream = fs.createReadStream(file);
       filestream.on('end', function() {
           fs.unlink(file);
@@ -150,7 +128,11 @@ var main = function () {
   })
 
   server.post('/api/validate/', (req, res) => {
-    res.status(200).json({"validated": ytdlcore.validateURL(req.body['url'])});
+      var fullUrl = req.protocol + '://' + req.get('host');
+      res.status(200).json({
+        "validated": ytdlcore.validateURL(req.body['url']),
+        "location": fullUrl
+        });
   })
 
   server.get('*', function (req, res){
