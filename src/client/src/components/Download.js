@@ -85,8 +85,10 @@ class Download extends React.Component {
               return query;
             })
             .then(function (url) {
+              console.log(query);
               console.log(url);
               jsonData = JSON.stringify({
+                query: query,
                 ytLink: url
               });
               context.download(context, jsonData);
