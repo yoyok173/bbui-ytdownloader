@@ -58,7 +58,7 @@ var main = function () {
             .audioBitrate(128)
             .save(`${filename}.mp3`)
             .on('end', () => {
-              fs.unlink(filename);
+              //fs.unlink(filename);
               res.status(200).json({"filename": filename + '.mp3'});
               console.log('finished downloading and converting');
             })
